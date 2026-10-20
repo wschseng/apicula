@@ -41,7 +41,12 @@ pub fn main(args: &Args) -> Result<()> {
     for (model_id, model) in db.models.iter().enumerate() {
         debug!("Converting model {} ({})...", model.name, model_id);
 
-        let name = model_file_namer.get_fresh_name(format!("{}", model.name.print_safe()));
+        let file_id = db.models_found_in[model_id];
+        let input_name = db.file_paths[file_id]
+            .file_stem()
+            .expect("model source path should have a filename")
+            .to_string_lossy();
+        let name = model_file_namer.get_fresh_name(input_name);
         let mut f = out_dir.create_file(&format!("{}.{}", name, format))?;
 
         let res = if format == "dae" {
